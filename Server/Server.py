@@ -4,7 +4,7 @@ import time
 from Data.entities import worlds
 # import qrcode
 
-hostName = "localhost"
+hostName = "0.0.0.0"
 hostPort = 8080
 
 
