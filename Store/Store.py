@@ -17,5 +17,7 @@ def handle(data):
     print(data)
     grequests.get(host + ':8080/scannedQR?data=' + data)
 
-if __name__=="__main__":
+
+def start_store():
     run(sys.argv[0])
+    return

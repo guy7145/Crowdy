@@ -1,6 +1,8 @@
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer, SimpleHTTPRequestHandler
 import time
+
+import os
 import qrcode
 from Data.entities import worlds
 
@@ -11,15 +13,17 @@ hostPort = 8080
 # generate qr
 def getQR(id):
     print(id)
-    img = qrcode.make(json.dumps({'id': '123456'}))
+    img = qrcode.make(json.dumps({'id': id, 'creation_date': time.time()}))
     url = '{}.png'.format(id)
     img.save(url)
     print(url)
     return url
 
 
-def scannedQR(params):
-    pass
+def scannedQR(id, creation_date):
+    os.remove('{}.png'.format(id))
+    print("service scanned {}'s barcode from {}".format(id, creation_date))
+    return
 
 
 def clientLeft(params):
