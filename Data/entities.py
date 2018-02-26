@@ -1,4 +1,5 @@
 api_key = 'AIzaSyDrB0OL0C7ufCwt_XFJx2JgkXhAqN38XaA'
+
 # region products
 clothing = 'clothing'
 food = 'food'
@@ -44,7 +45,7 @@ class Service(NamedObj):
 
 
 worlds = [
-    World(name='Big Beer Sheva', location={'lat': 31.243290, 'lng': 34.810145}, services=[
+    World(name='Big BS', location={'lat': 31.243290, 'lng': 34.810145}, services=[
         Service(name="Be'er Sheva", vicinity="Be'er Sheva", location={'lat': 31.252973, 'lng': 34.791462}, products=[]),
         Service(name="Avazi", vicinity="Derech Hevron 21, Be'er Sheva", location={'lat': 31.2438256, 'lng': 34.809784}, products=[food, drink]),
         Service(name="Ziv Kitchens", vicinity="דיזיין פלוס, דרך חברון 48, באר שבע", location={'lat': 31.243357, 'lng': 34.809923}, products=[food, drink, coffee]),
