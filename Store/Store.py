@@ -1,8 +1,8 @@
-import subprocess,json,time
+import subprocess,json,time,sys
 from multiprocessing.pool import Pool
 import grequests
 cmd = "zbarcam.exe --nodisplay"
-def run():
+def run(host):
     from subprocess import Popen, PIPE, CalledProcessError
     with Pool() as pool:
         with Popen(cmd, stdout=PIPE, bufsize=1, universal_newlines=True) as p:
@@ -15,7 +15,7 @@ def run():
 
 def handle(data):
     print(data)
-    grequests.get('localhost:8080/entered?data=' + data)
+    grequests.get(host + ':8080/scannedQR?data=' + data)
 
 if __name__=="__main__":
-    run()
+    run(sys.argv[0])
