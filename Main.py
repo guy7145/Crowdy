@@ -1,3 +1,2 @@
-if __name__=="__main__":
-    from Server.Server import listen
-    listen()
+from Server.Server import listen
+from Store.Store import start_store

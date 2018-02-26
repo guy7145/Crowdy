@@ -19,8 +19,6 @@ def run():
             # pool.apply_async(handle,[data])
             handle(data)
 
-
-if __name__=="__main__":
-    global host
-    host=sys.argv[1]
-    run()
+def start_store():
+    run(sys.argv[0])
+    return
