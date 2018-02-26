@@ -4,6 +4,21 @@ import time
 hostName = "localhost"
 hostPort = 9000
 
+def getQR(params):
+    pass
+def scannedQR(params):
+    pass
+def clientLeft(params):
+    pass
+def getWorlds(params):
+    pass
+def getWorld(params):
+    pass
+def register(params):
+    pass
+def login(params):
+    pass
+
 functions = [
     ["/getQR",getQR],
     ["/scannedQR",scannedQR],
@@ -15,13 +30,19 @@ functions = [
     ["/",None]
 ]
 
+def parse_params(params):
+    ans = {}
+    for pair in params.split("&"):
+        splt = pair.split("=")
+        ans[splt[0]]=splt[1]
 
 class MyServer(BaseHTTPRequestHandler):
     def do_GET(self):
-        
+        req = self.path.split("?")[0]
+        params = parse_params(self.path.split("?")[1])
         self.send_response(200)
         self.end_headers()
-        functions[self.path]()
+        functions[self.path](params)
 
 
 myServer = HTTPServer((hostName, hostPort), MyServer)
