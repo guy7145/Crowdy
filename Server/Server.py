@@ -2,10 +2,10 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import time
 
 hostName = "localhost"
-hostPort = 9000
+hostPort = 8080
 
 def getQR(params):
-    pass
+    print(params)
 def scannedQR(params):
     pass
 def clientLeft(params):
@@ -19,30 +19,33 @@ def register(params):
 def login(params):
     pass
 
-functions = [
-    ["/getQR",getQR],
-    ["/scannedQR",scannedQR],
-    ["/clientLeft",clientLeft],
-    ["/getWorlds",getWorlds],
-    ["/getWorld",getWorld],
-    ["/register",register],
-    ["/login",login],
-    ["/",None]
-]
+functions = {
+    "/getQR":getQR,
+    "/scannedQR":scannedQR,
+    "/clientLeft":clientLeft,
+    "/getWorlds":getWorlds,
+    "/getWorld":getWorld,
+    "/register":register,
+    "/login":login,
+    "/":None
+}
 
 def parse_params(params):
     ans = {}
-    for pair in params.split("&"):
-        splt = pair.split("=")
+    print(params)
+    for pair in params.split('&'):
+        splt = pair.split('=')
         ans[splt[0]]=splt[1]
+    return ans
 
 class MyServer(BaseHTTPRequestHandler):
     def do_GET(self):
-        req = self.path.split("?")[0]
-        params = parse_params(self.path.split("?")[1])
+        req = self.path.split('?')[0]
+        if(req == "/favicon.ico"): return
+        params = parse_params(self.path.split('?')[1])
         self.send_response(200)
         self.end_headers()
-        functions[self.path](params)
+        functions[req](params)
 
 
 myServer = HTTPServer((hostName, hostPort), MyServer)
