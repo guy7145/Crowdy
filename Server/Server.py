@@ -1,4 +1,5 @@
 import json
+import urllib
 from http.server import BaseHTTPRequestHandler, HTTPServer, SimpleHTTPRequestHandler
 import time
 
@@ -12,7 +13,7 @@ hostPort = 8080
 
 # generate qr
 def getQR(id):
-    print(id)
+    print('getQR ({})'.format(id))
     img = qrcode.make(json.dumps({'id': id, 'creation_date': time.time()}))
     url = '{}.png'.format(id)
     img.save(url)
@@ -21,9 +22,9 @@ def getQR(id):
 
 
 def scannedQR(id, creation_date):
+    print('scannedQR ({}, {})'.format(id, creation_date))
     os.remove('{}.png'.format(id))
-    print("service scanned {}'s barcode from {}".format(id, creation_date))
-    return
+    return 'scanned successfully'
 
 
 def clientLeft(params):
@@ -31,11 +32,15 @@ def clientLeft(params):
 
 
 def getWorlds():
-    return worlds
+    print('getWorlds')
+    return str([w.get_name() for w in worlds.values()])
 
 
-def getWorld(world_name):
-    return json.dumps(worlds[world_name].get_services())
+def getWorld(id):
+    print('getWorld ({})'.format(id))
+    services = list(worlds[id].get_services().values())
+    ser = [json.dumps(s.__dict__()) for s in services]
+    return str(ser)
 
 
 def register(id):
@@ -69,7 +74,9 @@ def parse_params(params):
 class MyServer(SimpleHTTPRequestHandler):
     def do_GET(self):
         try:
-            url_parts = self.path.split('?')
+            print(self.path)
+            print(urllib.parse.unquote(self.path))
+            url_parts = urllib.parse.unquote(self.path).split('?')
             req = url_parts[0]
             params_string = url_parts[1] if len(url_parts) >= 2 else ''
             if req not in functions.keys():
@@ -80,7 +87,13 @@ class MyServer(SimpleHTTPRequestHandler):
             print(params)
             self.wfile.write(functions[req](**params).encode("utf-8"))
         except TypeError as e:
-            self.send_response(200)
+            print(e)
+            self.send_response(401)
+            self.end_headers()
+            self.wfile.write(e.__repr__().encode("utf-8"))
+        except Exception as e:
+            print(e)
+            self.send_response(400)
             self.end_headers()
             self.wfile.write(e.__repr__().encode("utf-8"))
         return
