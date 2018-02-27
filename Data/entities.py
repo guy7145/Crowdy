@@ -52,7 +52,7 @@ class Service(NamedObj):
 
 
 worlds = {
-    w.get_name(): w for w in [World(name="Big BS", location={"lat": 31.243290, "lng": 34.810145}, services=[
+    w.get_name(): w for w in [World(name="Big_BS", location={"lat": 31.243290, "lng": 34.810145}, services=[
         Service(name="Beer Sheva", vicinity="Beer Sheva", location={"lat": 31.252973, "lng": 34.791462}, categories=[]),
         Service(name="Avazi", vicinity="Derech Hevron 21, Be'er Sheva", location={"lat": 31.2438256, "lng": 34.809784}, categories=[food, drink]),
         Service(name="Ziv Kitchens", vicinity="דיזיין פלוס, דרך חברון 48, באר שבע", location={"lat": 31.243357, "lng": 34.809923}, categories=[food, drink, coffee]),

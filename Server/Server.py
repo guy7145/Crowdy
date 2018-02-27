@@ -1,9 +1,14 @@
 import json
+import socket
 import urllib
 from http.server import BaseHTTPRequestHandler, HTTPServer, SimpleHTTPRequestHandler
-import time,calendar
+import time
+import calendar
 
 import os
+from socketserver import ThreadingMixIn
+
+import errno
 import qrcode
 from Data.entities import worlds
 from functools import reduce
@@ -11,10 +16,11 @@ from functools import reduce
 hostName = "0.0.0.0"
 hostPort = 8080
 people_in_stores = {
-"Castro":set([(1,1),(2,2),(3,3)]),
-"FOX HOME":set([(1,1),(2,2),(3,3),(4,4)]),
-"Avazi":set([(1,1),(2,2)])
+"Castro": set([(1,1)]),
+"FOX HOME": set([(1,1),(2,2),(3,3),(4,4)]),
+"Avazi": set([(1,1),(2,2)])
 }
+
 category_to_time = {
     "clothing":5,
     "food":3,
@@ -25,6 +31,8 @@ category_to_time = {
     "medicine":14,
     "locks":18
 }
+
+
 # generate qr
 def getQR(id):
     print('getQR ({})'.format(id))
@@ -34,8 +42,11 @@ def getQR(id):
     print(url)
     return url
 
+
 def get_now():
     return calendar.timegm(time.gmtime())
+
+
 def scannedQR(store, id, creation_date):
     print('scannedQR ({}, {}, {})'.format(store, id, creation_date))
     categories = None
@@ -53,8 +64,11 @@ def scannedQR(store, id, creation_date):
         people_in_stores[store] = set()
     if (id,creation_date) in people_in_stores[store]:
         people_in_stores[store].discard((id,creation_date))
-        os.remove('{}.png'.format(id))
         print("removed")
+        try:
+            os.remove('{}.png'.format(id))
+        except Exception as e:
+            print(e)
     else:
         people_in_stores[store].add((id,creation_date))
         print("Added")
@@ -116,12 +130,16 @@ def parse_params(params):
 class MyServer(SimpleHTTPRequestHandler):
     def do_GET(self):
         try:
-            print(self.path)
-            print(urllib.parse.unquote(self.path))
             url_parts = urllib.parse.unquote(self.path).split('?')
             req = url_parts[0]
             params_string = url_parts[1] if len(url_parts) >= 2 else ''
             if req not in functions.keys():
+                print('{} not a supported function'.format(req))
+                # if req[-10:] == 'index.html':
+                #     print('copying...')
+                #     with open(req) as f:
+                #         self.copyfile(f, self.wfile)
+                # else:
                 return super().do_GET()
             params = parse_params(params_string)
             self.send_response(200)
@@ -142,9 +160,29 @@ class MyServer(SimpleHTTPRequestHandler):
         return
 
 
+class ThreadingHTTPServer(ThreadingMixIn, HTTPServer):
+    pass
+
+
+def get_server(port=8080, next_attempts=0, serve_path=None):
+    Handler = MyServer
+    if serve_path:
+        Handler.serve_path = serve_path
+    while next_attempts >= 0:
+        try:
+            httpd = ThreadingHTTPServer(("", port), Handler)
+            return httpd
+        except socket.error as e:
+            if e.errno == errno.EADDRINUSE:
+                next_attempts -= 1
+                port += 1
+            else:
+                raise
+
+
 def listen():
     print(time.asctime(), "Server Starts - %s:%s" % (hostName, hostPort))
-    with HTTPServer((hostName, hostPort), MyServer) as server:
+    with get_server() as server:
         try:
             server.serve_forever()
         except KeyboardInterrupt:

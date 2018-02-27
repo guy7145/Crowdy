@@ -1,7 +1,7 @@
-import subprocess,json,time,sys
-from multiprocessing.pool import Pool
+import json
 from Data.http import fetch_url
 cmd = "zbarcam.exe --nodisplay"
+
 
 def handle(data,host):
     print(json.dumps(data))
@@ -9,6 +9,7 @@ def handle(data,host):
     query = 'http://{}:8080/scannedQR?store={}&id={id}&creation_date={creation_date}'.format(host, store, **data)
     print(query)
     print(fetch_url(query))
+
 
 def run(host):
     from subprocess import Popen, PIPE, CalledProcessError
@@ -20,6 +21,7 @@ def run(host):
             data = json.loads(line[line.find(":")+1:])
             # pool.apply_async(handle,[data])
             handle(data,host)
+
 
 def start_store(host):
     run(host)
