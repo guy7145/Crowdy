@@ -18,6 +18,7 @@ def make_headers_with_user_agent(headers):
 
 def fetch_url(url, headers=None, return_bytes=False):
     # log('fetching {}'.format(url))
+    url=make_safe_url(url)
     headers = make_headers_with_user_agent(headers)
     req = Request(url, headers=headers)
     with urlopen(req) as page:
